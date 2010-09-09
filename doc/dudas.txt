@@ -1,0 +1,70 @@
+I am compiling python 2.4.6 from sources  to build my custom python environment in my home directory and  i set the next files in this locations to make sure the sys.path is modified ( even i am using the standard site-package place by now )
+
+/home/user/opt/lib/python2.4/distutils/distutils.cfg ,
+/home/user/opt/lib/python2.4/sitecustomize.py                ## BTW; better in site-packages ??
+/home/user/opt/lib/python2.4/site-packages/altinstall.pth
+/home/user/opt/lib/python2.4/site-packages/myapp.pth
+
+The point is that when i run buildout  i get an error from zc.buildout about site-dirs is not in sys.path , but if i execute the python interpreter that i have just build i can see that "/home/user/opt/lib/python2.4/site-packages" it is in sys.path . Any clue ? Thanks!
+
+__________________________error_____________________________________________
+Getting distribution for 'zc.buildout==1.1.1'.
+error: /home/user/opt/lib/python2.4/site-packages (in --site-dirs) is not on sys.path
+An error occurred when trying to install zc.buildout 1.1.1. Look above this message for any errors that were output by easy_install.
+While:
+  Bootstrapping.
+  Getting distribution for 'zc.buildout==1.1.1'.
+Error: Couldn't install: zc.buildout 1.1.1
+
+
+user@host:~/utilities/zish-0.2/build$ python
+Python 2.4.6 (#4, Aug 28 2010, 14:47:55) 
+[GCC 4.3.2] on linux2
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import sys 
+>>> sys.path
+['', '/home/user/opt/lib/python2.4/site-packages/setuptools-0.6c11-py2.4.egg', '/home/user/opt/lib/python2.4/site-packages/ZopeSkel-2.17-py2.4.egg', '/home/user/opt/lib/python2.4/site-packages/Cheetah-2.2.1-py2.4-linux-i686.egg', '/home/user/opt/lib/python2.4/site-packages/PasteScript-1.7.3-py2.4.egg', '/home/user/opt/lib/python2.4/site-packages/PasteDeploy-1.3.3-py2.4.egg', '/home/user/opt/lib/python2.4/site-packages/Paste-1.7.4-py2.4.egg', '/home/user/opt/lib/python2.4/site-packages/virtualenv-1.4.9-py2.4.egg', '/home/user/opt/lib/python24.zip', '/home/user/opt/lib/python2.4', '/home/user/opt/lib/python2.4/plat-linux2', '/home/user/opt/lib/python2.4/lib-tk', '/home/user/opt/lib/python2.4/lib-dynload', '/home/user/opt/lib/python2.4/site-packages', '/home/user/opt/lib/python2.4/site-packages/PIL', '/home/user/opt/lib/python2.4/site-packages']
+>>> 
+
+
+
+#--------------------------distutils.cfg -------------------------------------
+[build]
+compiler = unix
+
+[install]
+
+[easy_install]
+install-dir = /home/user/opt/lib/python2.4/site-packages
+script-dir = /home/user/opt/bin
+build-directory = /home/user/opt/tmp
+# uncommented raise an error:
+#error: /home/user/opt/lib/python2.4/site-packages (in --site-dirs) is not on sys.path
+#site-dirs = /home/user/opt/lib/python2.4/site-packages
+
+
+
+#--------------------------sitecustomize.py -------------------------------------
+#site.addsitedir(sitedir, known_paths=None)
+#Adds a directory to sys.path and processes its pth files.
+try:
+ import os
+ import sys
+ import site
+except ImportError:
+ pass
+else:
+ sys.setdefaultencoding("utf-8")
+ site.addsitedir(os.path.abspath("/home/user/opt/lib/python2.4/site-packages"))
+
+
+#-------------------------- altinstall.pth -------------------------------------
+import os, site
+site.addsitedir(os.path.abspath("/home/user/opt/lib/python2.4/site-packages"))
+
+
+
+#-------------------------- myapp.pth -------------------------------------
+# quite redundant righ ?
+/home/user/opt/lib/python2.4                    
+/home/user/opt/lib/python2.4/site-packages
